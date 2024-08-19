@@ -1,7 +1,11 @@
 #!/bin/sh
 
-# Load environment variables from an external file, if it exists
-ENV_VARS_FILE="./env_vars.sh"
+# Determine the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "$0")" >/dev/null 2>&1 && pwd)"
+REPOSITORY_DIR="$(dirname "$SCRIPT_DIR")"
+
+# Load environment variables from the env_vars.sh in the scripts directory within the repository
+ENV_VARS_FILE="$SCRIPT_DIR/env_vars.sh"
 if [ -f "$ENV_VARS_FILE" ]; then
     . "$ENV_VARS_FILE"
 else
