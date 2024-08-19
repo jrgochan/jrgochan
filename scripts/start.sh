@@ -1,13 +1,19 @@
 #!/bin/sh
 
-# Define the repository URL and clone path
-REPO_URL_BASE="git@github.com"
-REPO_URL_PATH="jrgochan/jrgochan"
-REPO_URL_EXTENSION="git"
-REPO_URL="$REPO_URL_BASE:$REPO_URL_PATH.$REPO_URL_EXTENSION"
-CODE_DIR="$HOME/code"
-GITHUB_DIR="$CODE_DIR/github.com"
-CLONE_DIR="$GITHUB_DIR/$REPO_URL_PATH"
+# Load environment variables from an external file, if it exists
+ENV_VARS_FILE="./env_vars.sh"
+if [ -f "$ENV_VARS_FILE" ]; then
+    . "$ENV_VARS_FILE"
+else
+    echo "Environment variables file ($ENV_VARS_FILE) not found. Using default settings."
+    # Default environment variables if the file is not found
+    REPO_URL_BASE="git@github.com"
+    REPO_URL_PATH="jrgochan/jrgochan"
+    REPO_URL_EXTENSION="git"
+    CODE_DIR="$HOME/code"
+    GITHUB_DIR="$CODE_DIR/github.com"
+    CLONE_DIR="$GITHUB_DIR/$REPO_URL_PATH"
+fi
 
 # Check if git is installed
 if ! command -v git >/dev/null 2>&1; then
@@ -16,9 +22,14 @@ if ! command -v git >/dev/null 2>&1; then
 fi
 
 # Check if the script is being called recursively
-if [ "$JRGOCHAN_SCRIPT_RUNNING" = "true" ]; then
+if [ "$USER_SCRIPT_RUNNING" = "true" ]; then
     echo "Script is already running. Exiting to prevent recursion."
     exit 0
+fi
+
+# Create the GitHub directory if it doesn't exist
+if [ ! -d "$GITHUB_DIR" ]; then
+    mkdir -p "$GITHUB_DIR"
 fi
 
 # Clone the repository
@@ -27,8 +38,8 @@ if [ -d "$CLONE_DIR" ]; then
     cd "$CLONE_DIR" || exit 1
     git pull origin main
 else
-    echo "Cloning repository $REPO_URL to $CLONE_DIR..."
-    git clone "$REPO_URL" "$CLONE_DIR"
+    echo "Cloning repository $REPO_URL_BASE:$REPO_URL_PATH.$REPO_URL_EXTENSION to $CLONE_DIR..."
+    git clone "$REPO_URL_BASE:$REPO_URL_PATH.$REPO_URL_EXTENSION" "$CLONE_DIR"
 fi
 
 # Check if the clone was successful
@@ -48,7 +59,7 @@ if [ ! -x "$START_SCRIPT" ]; then
 fi
 
 # Set a flag to prevent recursion
-export JRGOCHAN_SCRIPT_RUNNING="true"
+export USER_SCRIPT_RUNNING="true"
 
 # Execute the start script
 echo "Executing $START_SCRIPT..."
@@ -63,5 +74,5 @@ else
 fi
 
 # Unset the recursion flag
-unset JRGOCHAN_SCRIPT_RUNNING
+unset USER_SCRIPT_RUNNING
 
