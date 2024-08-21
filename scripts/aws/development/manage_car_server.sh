@@ -24,8 +24,8 @@ SERVER_ADDRESSES=$(jq -r ".server_addresses[]" $SSH_CONFIG_FILE)
 
 # Load script configuration
 REPO_DIR=$(read_json "repo_dir" $SCRIPT_CONFIG_FILE)
-REMOTE_SCRIPT_DIR=$(read_json "remote_script_dir" $SCRIPT_CONFIG_FILE | sed "s@\\\$HOME@$HOME@")
-REMOTE_LOG_DIR=$(read_json "remote_log_dir" $SCRIPT_CONFIG_FILE | sed "s@\\\$HOME@$HOME@")
+REMOTE_SCRIPT_DIR=$(read_json "remote_script_dir" $SCRIPT_CONFIG_FILE | sed "s@\\\$HOME@/home/$SERVER_USER@")
+REMOTE_LOG_DIR=$(read_json "remote_log_dir" $SCRIPT_CONFIG_FILE | sed "s@\\\$HOME@/home/$SERVER_USER@")
 LOCAL_LOG_DIR=$(read_json "local_log_dir" $SCRIPT_CONFIG_FILE)
 SCRIPT_NAME=$(read_json "script_name" $SCRIPT_CONFIG_FILE)
 PHONE_NUMBER=$(read_json "phone_number" $SCRIPT_CONFIG_FILE)
