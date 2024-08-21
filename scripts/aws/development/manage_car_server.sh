@@ -24,8 +24,8 @@ SERVER_ADDRESSES=$(jq -r ".server_addresses[]" $SSH_CONFIG_FILE)
 
 # Load script configuration
 REPO_DIR=$(read_json "repo_dir" $SCRIPT_CONFIG_FILE)
-REMOTE_SCRIPT_DIR=$(read_json "remote_script_dir" $SCRIPT_CONFIG_FILE)
-REMOTE_LOG_DIR=$(read_json "remote_log_dir" $SCRIPT_CONFIG_FILE)
+REMOTE_SCRIPT_DIR=$(read_json "remote_script_dir" $SCRIPT_CONFIG_FILE | sed "s@\\\$HOME@~@")
+REMOTE_LOG_DIR=$(read_json "remote_log_dir" $SCRIPT_CONFIG_FILE | sed "s@\\\$HOME@~@")
 LOCAL_LOG_DIR=$(read_json "local_log_dir" $SCRIPT_CONFIG_FILE)
 SCRIPT_NAME=$(read_json "script_name" $SCRIPT_CONFIG_FILE)
 PHONE_NUMBER=$(read_json "phone_number" $SCRIPT_CONFIG_FILE)
@@ -129,7 +129,7 @@ fi
 EOF
 
 # Step 6: Transfer and execute the script on the flux-server
-scp -q $SCRIPT_NAME $SERVER_USER@$CONNECTED_SERVER:$REMOTE_SCRIPT_DIR/ 2>> $ERROR_LOG_FILE
+scp -q $SCRIPT_NAME $SERVER_USER@$CONNECTED_SERVER:"$REMOTE_SCRIPT_DIR/" 2>> $ERROR_LOG_FILE
 ssh $SERVER_USER@$CONNECTED_SERVER "bash $REMOTE_SCRIPT_DIR/$SCRIPT_NAME" 2>> $ERROR_LOG_FILE
 
 # Step 7: Check if the SSH command was successful
