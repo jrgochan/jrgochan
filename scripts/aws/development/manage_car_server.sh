@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 # Load configuration from JSON files
@@ -98,7 +97,10 @@ if [ -z "$CONNECTED_SERVER" ]; then
     exit 1
 fi
 
-# Step 4: Prepare the script content to be run on the remote server
+# Step 4: Create the remote directory if it doesn't exist
+ssh $SERVER_USER@$CONNECTED_SERVER "mkdir -p $REMOTE_SCRIPT_DIR"
+
+# Step 5: Prepare the script content to be run on the remote server
 cat << EOF > $SCRIPT_NAME
 #!/bin/bash
 
@@ -126,11 +128,11 @@ else
 fi
 EOF
 
-# Step 5: Transfer and execute the script on the flux-server
+# Step 6: Transfer and execute the script on the flux-server
 scp -q $SCRIPT_NAME $SERVER_USER@$CONNECTED_SERVER:$REMOTE_SCRIPT_DIR/ 2>> $ERROR_LOG_FILE
 ssh $SERVER_USER@$CONNECTED_SERVER "bash $REMOTE_SCRIPT_DIR/$SCRIPT_NAME" 2>> $ERROR_LOG_FILE
 
-# Step 6: Check if the SSH command was successful
+# Step 7: Check if the SSH command was successful
 if [ $? -eq 0 ]; then
     echo "$(get_message "execution_success")" | tee -a $LOG_FILE
     rm -f $SCRIPT_NAME  # Clean up the local script file
@@ -141,6 +143,6 @@ else
     exit 1
 fi
 
-# Step 7: Clean up local script file
+# Step 8: Clean up local script file
 rm -f $SCRIPT_NAME
 
