@@ -24,8 +24,8 @@ SERVER_ADDRESSES=$(jq -r ".server_addresses[]" $SSH_CONFIG_FILE)
 
 # Load script configuration
 REPO_DIR=$(read_json "repo_dir" $SCRIPT_CONFIG_FILE)
-REMOTE_SCRIPT_DIR=$(read_json "remote_script_dir" $SCRIPT_CONFIG_FILE | sed "s@\\\$HOME@~@")
-REMOTE_LOG_DIR=$(read_json "remote_log_dir" $SCRIPT_CONFIG_FILE | sed "s@\\\$HOME@~@")
+REMOTE_SCRIPT_DIR=$(read_json "remote_script_dir" $SCRIPT_CONFIG_FILE | sed "s@\\\$HOME@$HOME@")
+REMOTE_LOG_DIR=$(read_json "remote_log_dir" $SCRIPT_CONFIG_FILE | sed "s@\\\$HOME@$HOME@")
 LOCAL_LOG_DIR=$(read_json "local_log_dir" $SCRIPT_CONFIG_FILE)
 SCRIPT_NAME=$(read_json "script_name" $SCRIPT_CONFIG_FILE)
 PHONE_NUMBER=$(read_json "phone_number" $SCRIPT_CONFIG_FILE)
@@ -35,7 +35,7 @@ DATE=$(date +%Y%m%d_%H%M%S)
 LOG_FILE="$LOCAL_LOG_DIR/execution_$DATE.log"
 ERROR_LOG_FILE="$LOCAL_LOG_DIR/error_$DATE.log"
 
-# Ensure the logs directory exists
+# Ensure the logs directory exists locally
 mkdir -p "$LOCAL_LOG_DIR"
 
 # Ensure GITHUB_BRANCH is set
@@ -97,8 +97,8 @@ if [ -z "$CONNECTED_SERVER" ]; then
     exit 1
 fi
 
-# Step 4: Create the remote directory if it doesn't exist
-ssh $SERVER_USER@$CONNECTED_SERVER "mkdir -p $REMOTE_SCRIPT_DIR"
+# Step 4: Create the remote directories if they don't exist
+ssh $SERVER_USER@$CONNECTED_SERVER "mkdir -p $REMOTE_SCRIPT_DIR $REMOTE_LOG_DIR"
 
 # Step 5: Prepare the script content to be run on the remote server
 cat << EOF > $SCRIPT_NAME
@@ -108,7 +108,7 @@ cat << EOF > $SCRIPT_NAME
 LOG_FILE="$REMOTE_LOG_DIR/execution_$DATE.log"
 ERROR_LOG_FILE="$REMOTE_LOG_DIR/error_$DATE.log"
 
-# Ensure directories exist
+# Ensure directories exist on the remote server
 mkdir -p $REMOTE_SCRIPT_DIR
 mkdir -p $REMOTE_LOG_DIR
 
