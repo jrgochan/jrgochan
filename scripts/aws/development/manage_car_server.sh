@@ -1,3 +1,4 @@
+
 #!/bin/bash
 
 # Load configuration from JSON files
@@ -34,6 +35,9 @@ EMAIL=$(read_json "email" $SCRIPT_CONFIG_FILE)
 DATE=$(date +%Y%m%d_%H%M%S)
 LOG_FILE="$LOCAL_LOG_DIR/execution_$DATE.log"
 ERROR_LOG_FILE="$LOCAL_LOG_DIR/error_$DATE.log"
+
+# Ensure the logs directory exists
+mkdir -p "$LOCAL_LOG_DIR"
 
 # Ensure GITHUB_BRANCH is set
 GITHUB_BRANCH="${GITHUB_BRANCH:-main}"
@@ -132,7 +136,7 @@ if [ $? -eq 0 ]; then
     rm -f $SCRIPT_NAME  # Clean up the local script file
 else
     echo "$(get_message "execution_failure")" | tee -a $LOG_FILE
-    echo "$(get_message "error_notify" | sed "s/{local_log_dir}/$LOCAL_LOG_DIR/; s/{remote_log_dir}/$REMOTE_LOG_DIR/")" | tee -a $LOG_FILE
+    echo "$(get_message "error_notify" | sed "s@{local_log_dir}@$LOCAL_LOG_DIR@; s@{remote_log_dir}@$REMOTE_LOG_DIR@")" | tee -a $LOG_FILE
     echo "Subject: Script Execution Error" | sendmail -v "$PHONE_NUMBER@$EMAIL" < $ERROR_LOG_FILE
     exit 1
 fi
