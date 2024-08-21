@@ -1,0 +1,8 @@
+{
+  "server_user": "jrgochan",
+  "server_addresses": [
+    "flux-server",
+    "flux-server-starlink",
+    "flux-server-phone"
+  ]
+}

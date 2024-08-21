@@ -1,0 +1,14 @@
+{
+  "messages": {
+    "repo_in_sync": "Your local repository is up-to-date with the main branch.",
+    "repo_behind": "Your local repository is behind the main branch.",
+    "repo_ahead": "Your local repository has unpushed changes.",
+    "repo_diverged": "Your local repository has diverged from the main branch.",
+    "ssh_connecting": "Attempting to connect to server: {server}",
+    "ssh_connected": "Connected to server: {server}",
+    "ssh_failed": "Failed to connect to any server. Please check your network and server status.",
+    "execution_success": "Script executed successfully on the flux-server.",
+    "execution_failure": "There was an error executing the script on the flux-server.",
+    "error_notify": "Script execution failed on the flux-server. Please check logs at {local_log_dir} and {remote_log_dir}."
+  }
+}

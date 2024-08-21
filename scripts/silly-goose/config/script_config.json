@@ -5,5 +5,6 @@
   "local_log_dir": "/Users/jrgochan/code/github.com/jrgochan/jrgochan/scripts/aws/development/logs",
   "script_name": "remote_script.sh",
   "phone_number": "505-699-1586",
-  "email": "jrgochan@jrgochan.io"
+  "email": "jrgochan@jrgochan.io",
+  "container_name": "docker.io/library/alpine"
 }

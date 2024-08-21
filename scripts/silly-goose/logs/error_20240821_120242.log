@@ -1,0 +1,4 @@
+scp: dest open "/Users/jrgochan/code/github.com/jrgochan/jrgochan/scripts/aws/development/production/": No such file or directory
+scp: failed to upload file remote_script.sh to /Users/jrgochan/code/github.com/jrgochan/jrgochan/scripts/aws/development/production/
+Authorized uses only. All activity may be monitored and reported.
+bash: /Users/jrgochan/code/github.com/jrgochan/jrgochan/scripts/aws/development/production/remote_script.sh: No such file or directory
