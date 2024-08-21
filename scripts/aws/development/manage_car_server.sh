@@ -1,9 +1,12 @@
 #!/bin/bash
 
 # Load configuration from JSON files
-SSH_CONFIG_FILE="config/ssh_config.json"
-SCRIPT_CONFIG_FILE="config/script_config.json"
-MESSAGES_FILE="config/messages_en.json"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR" || exit
+
+SSH_CONFIG_FILE="$SCRIPT_DIR/config/ssh_config.json"
+SCRIPT_CONFIG_FILE="$SCRIPT_DIR/config/script_config.json"
+MESSAGES_FILE="$SCRIPT_DIR/config/messages_en.json"
 
 # Function to read JSON values
 function read_json() {
@@ -32,6 +35,9 @@ DATE=$(date +%Y%m%d_%H%M%S)
 LOG_FILE="$LOCAL_LOG_DIR/execution_$DATE.log"
 ERROR_LOG_FILE="$LOCAL_LOG_DIR/error_$DATE.log"
 
+# Ensure GITHUB_BRANCH is set
+GITHUB_BRANCH="${GITHUB_BRANCH:-main}"
+
 # Step 1: Ensure script is run from the base of the git repo
 cd "$(git rev-parse --show-toplevel)" || exit
 
@@ -41,30 +47,36 @@ LOCAL=$(git rev-parse @)
 REMOTE=$(git rev-parse "origin/$GITHUB_BRANCH")
 BASE=$(git merge-base @ "origin/$GITHUB_BRANCH")
 
-if [ $LOCAL = $REMOTE ]; then
-    echo "$(get_message "repo_in_sync")" | tee -a $LOG_FILE
-elif [ $LOCAL = $BASE ]; then
-    echo "$(get_message "repo_behind")" | tee -a $LOG_FILE
+if [ -z "$LOCAL" ] || [ -z "$REMOTE" ] || [ -z "$BASE" ]; then
+    echo "Git repository is not properly set up or is missing commits. Exiting." | tee -a "$LOG_FILE"
+    exit 1
+fi
+
+if [ "$LOCAL" = "$REMOTE" ]; then
+    echo "$(get_message "repo_in_sync")" | tee -a "$LOG_FILE"
+elif [ "$LOCAL" = "$BASE" ]; then
+    echo "$(get_message "repo_behind")" | tee -a "$LOG_FILE"
     read -p "Do you want to continue running the script on the server (y/n)? " -n 1 -r
     echo    # move to a new line
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
         exit 1
     fi
-elif [ $REMOTE = $BASE ]; then
-    echo "$(get_message "repo_ahead")" | tee -a $LOG_FILE
+elif [ "$REMOTE" = "$BASE" ]; then
+    echo "$(get_message "repo_ahead")" | tee -a "$LOG_FILE"
     read -p "Do you want to continue running the script on the server (y/n)? " -n 1 -r
     echo    # move to a new line
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
         exit 1
     fi
 else
-    echo "$(get_message "repo_diverged")" | tee -a $LOG_FILE
+    echo "$(get_message "repo_diverged")" | tee -a "$LOG_FILE"
     read -p "Do you want to continue running the script on the server (y/n)? " -n 1 -r
     echo    # move to a new line
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
         exit 1
     fi
 fi
+
 # Step 3: Try to connect to one of the server addresses
 CONNECTED_SERVER=""
 for SERVER_ADDRESS in $SERVER_ADDRESSES; do
@@ -96,7 +108,6 @@ mkdir -p $REMOTE_LOG_DIR
 
 {
     echo "Starting remote script execution at \$(date)"
-    # Your script logic here, for example:
     podman build -t $CONTAINER_NAME .
     podman run -d --name $CONTAINER_NAME $CONTAINER_NAME
     echo "Remote script executed successfully."
@@ -128,3 +139,4 @@ fi
 
 # Step 7: Clean up local script file
 rm -f $SCRIPT_NAME
+
