@@ -113,6 +113,18 @@ ERROR_LOG_FILE="$REMOTE_LOG_DIR/error_$DATE.log"
 mkdir -p $REMOTE_SCRIPT_DIR
 mkdir -p $REMOTE_LOG_DIR
 
+# Check if Dockerfile exists
+if [ ! -f "$REMOTE_SCRIPT_DIR/Dockerfile" ]; then
+    echo "Dockerfile not found in $REMOTE_SCRIPT_DIR. Exiting." | tee -a \$LOG_FILE
+    exit 1
+fi
+
+# Validate container name
+if [[ ! "$CONTAINER_NAME" =~ ^[a-zA-Z0-9][a-zA-Z0-9_.-]*$ ]]; then
+    echo "Invalid container name: $CONTAINER_NAME. Exiting." | tee -a \$LOG_FILE
+    exit 1
+fi
+
 {
     echo "Starting remote script execution at \$(date)"
     podman build -t $CONTAINER_NAME .
