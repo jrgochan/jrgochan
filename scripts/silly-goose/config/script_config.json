@@ -1,6 +1,6 @@
 {
   "repo_dir": "/Users/jrgochan/code/github.com/jrgochan/jrgochan",
-  "remote_script_dir": "$HOME/code/github.com/jrgochan/jrgochan/scripts/aws/development/production",
+  "remote_script_dir": "$HOME/code/github.com/jrgochan/jrgochan/scripts/aws/development",
   "remote_log_dir": "$HOME/code/github.com/jrgochan/jrgochan/scripts/aws/development/logs",
   "local_log_dir": "/Users/jrgochan/code/github.com/jrgochan/jrgochan/scripts/aws/development/logs",
   "script_name": "manage_car_server.sh",
