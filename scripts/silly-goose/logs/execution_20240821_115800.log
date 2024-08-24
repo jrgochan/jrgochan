@@ -1,5 +1,0 @@
-Your local repository is up-to-date with the main branch.
-Attempting to connect to server: flux-server
-Connected to server: flux-server
-There was an error executing the script on the flux-server.
-Script execution failed on the flux-server. Please check logs at /Users/jrgochan/code/github.com/jrgochan/jrgochan/scripts/aws/development/logs and ~/code/github.com/jrgochan/jrgochan/scripts/aws/development/logs.
